@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CalmConnect - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap');
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #0f0f14, #06a6d6);
+            color: white;
+            height: 100vh;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Login Styles */
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            width: 350px;
+            color: white;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .login-container h1 {
+            font-family: 'Bubblegum Sans', cursive;
+            color: #1e90ff;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+
+        .login-container input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            color: #000;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-container button:hover {
+            background-color: #ff4500;
+        }
+
+        /* Chat Interface */
+        .chat-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .title {
+            font-family: 'Bubblegum Sans', cursive;
+            font-size: 60px;
+            text-align: center;
+            color: #1e90ff;
+            margin: 20px 0;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(173, 216, 230, 0.2);
+            padding: 0 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .main-container {
+            margin-left: 250px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-input {
+            display: flex;
+            width: 400px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #1e90ff;
+            color: white;
+        }
+
+        .chat-input button:hover {
+            background-color: #ff4500;
+        }
+
+        .chat {
+            display: flex;
+            margin: 5px 0;
+            max-width: 70%;
+        }
+
+        .chat.user {
+            justify-content: flex-end;
+            align-self: flex-end;
+        }
+
+        .chat.bot {
+            justify-content: flex-start;
+            align-self: flex-start;
+        }
+
+        .bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .user-bubble {
+            background-color: black;
+            color: white;
+        }
+
+        .bot-bubble {
+            background-color: white;
+            color: black;
+            box-shadow: 0px 1px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Page -->
+    <div id="login-section" class="login-container">
+        <h1>CalmConnect</h1>
+        <input type="text" id="username" placeholder="Username" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button onclick="login()">Login</button>
+        <p>Welcome to a safe space 🌿</p>
+    </div>
+
+    <!-- Chatbot Page -->
+    <div id="chat-section" class="chat-wrapper hidden">
+        <div class="title">CalmConnect</div>
+        <div class="sidebar">
+            <h3>Chat History</h3>
+            <ul id="history-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+        <div class="main-container">
+            <div class="chat-container">
+                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (username && password) {
+                document.getElementById("login-section").classList.add("hidden");
+                document.getElementById("chat-section").classList.remove("hidden");
+            } else {
+                alert("Please enter both username and password.");
+            }
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById("user-input");
+            let message = inputField.value.trim();
+            if (message === "") return;
+
+            let chatBox = document.getElementById("chat-box");
+
+            // User message
+            let userMessage = document.createElement("div");
+            userMessage.className = "chat user";
+            userMessage.innerHTML = `<div class="bubble user-bubble">${message}</div>`;
+            chatBox.appendChild(userMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Typing indicator
+            let typingMessage = document.createElement("div");
+            typingMessage.className = "chat bot";
+            typingMessage.id = "typing-indicator";
+            typingMessage.innerHTML = `<div class="bubble bot-bubble">💬 Typing...</div>`;
+            chatBox.appendChild(typingMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            fetch("http://127.0.0.1:5000/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Remove typing indicator
+                const typing = document.getElementById("typing-indicator");
+                if (typing) typing.remove();
+
+                // Bot message
+                let botMessage = document.createElement("div");
+                botMessage.className = "chat bot";
+                botMessage.innerHTML = `<div class="bubble bot-bubble">${data.response}</div>`;
+                chatBox.appendChild(botMessage);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+
+            addToHistory(message);
+            inputField.value = "";
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        function addToHistory(message) {
+            let historyList = document.getElementById("history-list");
+            let listItem = document.createElement("li");
+            listItem.textContent = message;
+            listItem.style.padding = "5px 0";
+            historyList.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
